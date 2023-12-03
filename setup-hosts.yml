@@ -1,0 +1,67 @@
+---
+
+- hosts: servers
+  name: "Setup Hosts "
+  become: true
+  gather_facts: true
+  tasks:
+  - name: Add users
+    ansible.builtin.import_role:
+      name: ../roles/users
+    tags: ['always','install','create_user']
+
+  # - name: Remove users
+  #   ansible.builtin.import_role:
+  #     name: ../roles/users
+  #     tasks_from: remove
+  #   tags: remove
+  - name: Setup Hosts
+    ansible.builtin.import_role:
+      name: ../roles/system_setup
+    tags: ['always', 'install']
+    
+  - name: Tailscale
+    ansible.builtin.import_role:
+      name: artis3n.tailscale
+    vars:
+      # Example pulling the API key from the env vars on the host running Ansible
+      tailscale_args: "--ssh=true"
+      tailscale_authkey: "tskey-auth-kDgb786CNTRL-eMEakdURQJZUQtW1cwZQSZjZ3Xk9P4DFT"
+        # tailscale_authkey: "{{{{ lookup('env', 'TAILSCALE_KEY') }}}}"
+    tags: ['install', 'always']
+    
+
+# - hosts: servers
+#   name: "Setup Base Apps"
+#   become: true
+#   gather_facts: false
+#   roles:
+#     - role: ../roles/users
+#       vars_files:
+#         - ../vars/hosts-active.yml
+#       tags: always
+
+
+
+
+        # - ../vars/pb-setup-hosts.yml
+# - hosts: servers
+#   name: "Setup Base Apps"
+#   become: true
+#   gather_facts: false
+#   tasks:
+#     - name: Include the users role
+#       roles:
+#         - role: roles/users
+#       vars_files:
+#         - ../vars/hosts-active.yml
+#         - ../vars/pb-setup-hosts.yml
+# - hosts: servers
+#   name: Add Tailscale to server
+#   roles:
+#     - role: artis3n.tailscale
+#       vars:
+#         # Example pulling the API key from the env vars on the host running Ansible
+#         tailscale_args: "--ssh=true"
+#         tailscale_authkey: "tskey-auth-kYWzVY2CNTRL-7cLySbndaxdy3MB9XCiXodMcNK7jqydh3"
+#         # tailscale_authkey: "{{{{ lookup('env', 'TAILSCALE_KEY') }}}}"
