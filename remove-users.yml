@@ -1,0 +1,12 @@
+---
+
+- hosts: servers
+  name: "Setup Hosts "
+  become: true
+  gather_facts: false
+  tasks:
+  - name: Remove users
+    ansible.builtin.import_role:
+      name: ../roles/users
+      tasks_from: remove
+    tags: ['always', 'remove']

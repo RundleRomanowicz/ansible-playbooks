@@ -1,0 +1,13 @@
+---
+
+- hosts: servers
+  name: "uninstall tailscale "
+  become: true
+  gather_facts: true
+  tasks:
+  - name: Tailscale
+    ansible.builtin.import_role:
+      name: artis3n.tailscale
+    vars:
+      state: absent
+    tags: ['uninstall', 'always']
